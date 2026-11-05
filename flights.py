@@ -85,11 +85,34 @@ def _query(from_ap, to_ap, out_date, ret_date, trip, cfg) -> list[dict]:
     return parse_cards(fetch_flights_html(q))
 
 
+def _candidate_dates(cfg):
+    """合併「候選日」明確清單 + 「日期範圍」自動展開(出發日範圍 × 停留天數)。"""
+    out = list(cfg.get("候選日", []))
+    dr = cfg.get("日期範圍", {})
+    if dr.get("啟用"):
+        d0 = dt.date.fromisoformat(dr["出發日起"])
+        d1 = dt.date.fromisoformat(dr["出發日迄"])
+        stays = dr.get("停留天數", [7]) or [7]
+        day = d0
+        while day <= d1:
+            for s in stays:
+                out.append({"去程": day.isoformat(),
+                            "回程": (day + dt.timedelta(days=s)).isoformat()})
+            day += dt.timedelta(days=1)
+    seen, uniq = set(), []
+    for e in out:
+        k = (e["去程"], e.get("回程"))
+        if k not in seen:
+            seen.add(k)
+            uniq.append(e)
+    return uniq
+
+
 def _combos(cfg, trip):
     """產生要查的 (from, to, 去, 回, 方向標籤) 組合。"""
     tw, kr = cfg["台北機場"], cfg["韓國機場"]
     openjaw = cfg.get("開放不同進出點_openjaw", False)
-    for d in cfg["候選日"]:
+    for d in _candidate_dates(cfg):
         out_date, ret_date = d["去程"], d.get("回程")
         if trip == "round-trip":
             if openjaw:
@@ -110,6 +133,10 @@ def run(cfg: dict, limit: int | None = None, verbose: bool = True) -> dict:
     ts = dt.datetime.now().isoformat(timespec="seconds")
     results = {"抓取時間": ts, "round-trip": [], "one-way": []}
     delay = cfg.get("每次請求間隔秒數", [3, 6])
+    if verbose:
+        nd = len(_candidate_dates(cfg))
+        est = sum(len(list(_combos(cfg, t))) for t in cfg.get("抓取模式", ["round-trip"]))
+        print(f"候選日 {nd} 組,預計查詢 {est} 次(越多越慢也越容易被擋)")
     n = 0
     for trip in cfg.get("抓取模式", ["round-trip"]):
         for (frm, to, od, rd, route) in _combos(cfg, trip):
