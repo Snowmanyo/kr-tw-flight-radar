@@ -1,0 +1,257 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>韓台機票雷達</title>
+<style>
+  /* 版面:頂部黏性操作列(切換來回/單程+篩選),下方依候選日分卡片列出最低價 */
+  :root {
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+    --surface-2: #eef1f6;
+    --line: #dde2ec;
+    --fg: #1a2230;
+    --muted: #5d677a;
+    --accent: #2f5bd0;
+    --accent-soft: #e7edfc;
+    --good: #0f8a5f;
+    --good-soft: #e0f3ea;
+    --warn: #b7791f;
+    --font: "IBM Plex Sans", system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11151c;
+      --surface: #1a212b;
+      --surface-2: #222b38;
+      --line: #313c4b;
+      --fg: #e8ecf3;
+      --muted: #9aa6b8;
+      --accent: #6c93f5;
+      --accent-soft: #1f2d4d;
+      --good: #35c489;
+      --good-soft: #163428;
+      --warn: #e0a84a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11151c;
+    --surface: #1a212b;
+    --surface-2: #222b38;
+    --line: #313c4b;
+    --fg: #e8ecf3;
+    --muted: #9aa6b8;
+    --accent: #6c93f5;
+    --accent-soft: #1f2d4d;
+    --good: #35c489;
+    --good-soft: #163428;
+    --warn: #e0a84a;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font); line-height: 1.5; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--surface); z-index: 20; }
+  a { color: var(--accent); }
+  .wrap { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+  header.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .bar-inner { padding-block: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .titlerow { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: 1.15rem; font-weight: 700; margin: 0; letter-spacing: .01em; }
+  .updated { font-size: .78rem; color: var(--muted); font-family: var(--mono); }
+
+  /* 來回/單程 切換 */
+  .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
+  .seg button { font: inherit; font-weight: 600; font-size: .9rem; border: 0; background: transparent; color: var(--muted); padding: 7px 18px; border-radius: 7px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-size: .85rem; }
+  .filt { display: flex; align-items: center; gap: 6px; }
+  .filt label { color: var(--muted); }
+  select, .chk { font: inherit; font-size: .85rem; }
+  select { background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 7px; padding: 5px 8px; }
+  .airlines { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { font-size: .8rem; border: 1px solid var(--line); background: var(--surface); color: var(--muted); padding: 4px 10px; border-radius: 999px; cursor: pointer; user-select: none; }
+  .pill[data-on="1"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+  main { padding-block: 18px 40px; display: flex; flex-direction: column; gap: 22px; }
+  .note { font-size: .8rem; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+
+  .daygroup { }
+  .dayhead { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .dayhead h2 { font-size: 1rem; margin: 0; font-weight: 700; }
+  .dayhead .sub { font-size: .8rem; color: var(--muted); font-family: var(--mono); }
+  .dayhead .lo { margin-left: auto; font-family: var(--mono); font-weight: 700; color: var(--good); }
+
+  .subgroup-label { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 4px 0 8px; }
+
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  th, td { text-align: left; padding: 9px 12px; white-space: nowrap; }
+  th { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--line); font-weight: 600; }
+  tbody tr + tr td { border-top: 1px solid var(--line); }
+  td.price { font-family: var(--mono); font-weight: 700; font-size: .95rem; }
+  td.num { font-family: var(--mono); color: var(--muted); }
+  tr.best td { background: var(--good-soft); }
+  .tag { font-size: .7rem; font-weight: 700; color: var(--good); border: 1px solid var(--good); border-radius: 5px; padding: 1px 5px; margin-left: 6px; }
+  .stops0 { color: var(--good); font-weight: 600; }
+  .empty { padding: 18px; color: var(--muted); font-size: .85rem; text-align: center; }
+  .loading { padding: 50px 0; text-align: center; color: var(--muted); }
+  @media (max-width: 480px) { h1 { font-size: 1.05rem; } th, td { padding: 8px 10px; } }
+</style>
+
+<header class="bar">
+  <div class="wrap bar-inner">
+    <div class="titlerow">
+      <h1>韓台機票雷達</h1>
+      <span class="updated" id="updated">—</span>
+    </div>
+    <div class="seg" role="group" aria-label="行程類型">
+      <button id="btn-rt" aria-pressed="true">來回</button>
+      <button id="btn-ow" aria-pressed="false">單程</button>
+    </div>
+    <div class="filters">
+      <div class="filt"><label><input type="checkbox" class="chk" id="direct"> 只看直達</label></div>
+      <div class="filt">
+        <label for="fromh">起飛時段</label>
+        <select id="fromh"></select><span>–</span><select id="toh"></select>
+      </div>
+    </div>
+    <div class="airlines" id="airlines"></div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <div class="loading">載入航班資料中…</div>
+</main>
+
+<script>
+const FMT = n => "NT$" + n.toLocaleString("en-US");
+const hhmm = m => m==null ? "—" : String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+const durtxt = m => m==null ? "—" : (m>=60 ? Math.floor(m/60)+"h"+(m%60?String(m%60).padStart(2,"0"):"") : m+"m");
+
+let DATA = null;
+let trip = "round-trip";
+const state = { direct:false, fromh:0, toh:24, off:new Set() };
+
+function airlinesOf(rows){ return [...new Set(rows.map(r=>r.airline))].sort(); }
+
+function buildHourSelects(){
+  const f=document.getElementById("fromh"), t=document.getElementById("toh");
+  f.innerHTML=""; t.innerHTML="";
+  for(let h=0;h<=24;h++){
+    const o1=new Option(String(h).padStart(2,"0")+":00",h); f.add(o1);
+    const o2=new Option(String(h).padStart(2,"0")+":00",h); t.add(o2);
+  }
+  f.value=0; t.value=24;
+  f.onchange=()=>{ state.fromh=+f.value; render(); };
+  t.onchange=()=>{ state.toh=+t.value; render(); };
+}
+
+function buildAirlines(){
+  const rows = DATA[trip]||[];
+  const box=document.getElementById("airlines"); box.innerHTML="";
+  airlinesOf(rows).forEach(a=>{
+    const el=document.createElement("span");
+    el.className="pill"; el.textContent=a;
+    el.dataset.on = state.off.has(a) ? "0":"1";
+    el.onclick=()=>{ state.off.has(a)?state.off.delete(a):state.off.add(a); el.dataset.on=state.off.has(a)?"0":"1"; render(); };
+    box.appendChild(el);
+  });
+}
+
+function pass(r){
+  if(state.direct && r.stops!==0) return false;
+  if(state.off.has(r.airline)) return false;
+  if(r.dep_min!=null){ if(r.dep_min < state.fromh*60 || r.dep_min > state.toh*60) return false; }
+  return true;
+}
+
+function groupKey(r){ return trip==="round-trip" ? r.out_date+"→"+r.ret_date : r.out_date; }
+
+function render(){
+  const main=document.getElementById("main");
+  const rows=(DATA[trip]||[]).filter(pass);
+  main.innerHTML="";
+  const noteDiv=document.createElement("div"); noteDiv.className="note";
+  noteDiv.textContent="價格為 Google Flights 參考價(可能來自第三方平台),訂票前請至航空公司官網確認實際票價與行李規則。";
+  main.appendChild(noteDiv);
+
+  const groups={};
+  rows.forEach(r=>{ (groups[groupKey(r)] ||= []).push(r); });
+  const keys=Object.keys(groups).sort();
+  if(!keys.length){ const e=document.createElement("div"); e.className="empty"; e.textContent="目前篩選條件下沒有航班,試著放寬條件。"; main.appendChild(e); return; }
+
+  // 整體最低價(此次篩選後)用來標記
+  const globalLo = Math.min(...rows.map(r=>r.price));
+
+  keys.forEach(k=>{
+    const list=groups[k].slice().sort((a,b)=>a.price-b.price);
+    const lo=list[0].price;
+    const g=document.createElement("section"); g.className="daygroup";
+    const head=document.createElement("div"); head.className="dayhead";
+    const h2=document.createElement("h2");
+    if(trip==="round-trip"){ const [o,r]=k.split("→"); h2.textContent="去 "+o+"　回 "+r; }
+    else h2.textContent=k+" 出發";
+    head.appendChild(h2);
+    const lohint=document.createElement("span"); lohint.className="lo"; lohint.textContent="最低 "+FMT(lo);
+    head.appendChild(lohint);
+    g.appendChild(head);
+
+    if(trip==="one-way"){
+      const dirs={}; list.forEach(r=>{ (dirs[r.route] ||= []).push(r); });
+      Object.keys(dirs).sort().forEach(dir=>{ addTable(g, dir, dirs[dir].slice(0,6), globalLo); });
+    } else {
+      addTable(g, null, list.slice(0,8), globalLo);
+    }
+    main.appendChild(g);
+  });
+}
+
+function addTable(parent, label, items, globalLo){
+  if(label){ const l=document.createElement("div"); l.className="subgroup-label"; l.textContent=label; parent.appendChild(l); }
+  const tw=document.createElement("div"); tw.className="tablewrap";
+  const t=document.createElement("table");
+  t.innerHTML="<thead><tr><th>價格</th><th>航空</th><th>路線</th><th>起飛</th><th>轉機</th><th>時長</th></tr></thead>";
+  const tb=document.createElement("tbody");
+  items.forEach(r=>{
+    const tr=document.createElement("tr");
+    if(r.price===globalLo) tr.className="best";
+    const stops = r.stops===0 ? '<span class="stops0">直達</span>' : (r.stops==null?'—':r.stops+" 轉");
+    tr.innerHTML =
+      `<td class="price">${FMT(r.price)}${r.price===globalLo?'<span class="tag">最低</span>':''}</td>`+
+      `<td>${r.airline}</td>`+
+      `<td class="num">${r.route}</td>`+
+      `<td class="num">${hhmm(r.dep_min)}</td>`+
+      `<td>${stops}</td>`+
+      `<td class="num">${durtxt(r.duration_min)}</td>`;
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb); tw.appendChild(t); parent.appendChild(tw);
+}
+
+function setTrip(nt){
+  trip=nt;
+  document.getElementById("btn-rt").setAttribute("aria-pressed", nt==="round-trip");
+  document.getElementById("btn-ow").setAttribute("aria-pressed", nt==="one-way");
+  buildAirlines(); render();
+}
+
+async function boot(){
+  buildHourSelects();
+  document.getElementById("btn-rt").onclick=()=>setTrip("round-trip");
+  document.getElementById("btn-ow").onclick=()=>setTrip("one-way");
+  document.getElementById("direct").onchange=e=>{ state.direct=e.target.checked; render(); };
+  try{
+    const res=await fetch("data.json",{cache:"no-store"});
+    DATA=await res.json();
+  }catch(e){
+    document.getElementById("main").innerHTML='<div class="empty">讀不到 data.json。請先執行抓價程式產生資料。</div>';
+    return;
+  }
+  document.getElementById("updated").textContent="更新於 "+(DATA["抓取時間"]||"—").replace("T"," ");
+  // 若來回沒資料就預設切到單程
+  if(!(DATA["round-trip"]||[]).length && (DATA["one-way"]||[]).length){ setTrip("one-way"); }
+  else setTrip("round-trip");
+}
+boot();
+</script>

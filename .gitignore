@@ -1,0 +1,8 @@
+.venv/
+*.log
+launchd.out.log
+launchd.err.log
+cron.log
+scrape.log
+server.log
+__pycache__/
