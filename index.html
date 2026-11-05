@@ -3,102 +3,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>韓台機票雷達</title>
 <style>
-  /* 版面:頂部黏性操作列(切換來回/單程+篩選),下方依候選日分卡片列出最低價 */
+  /* 版面:頂部操作列(來回/單程 + 下拉篩選),下方單一可排序表格,所有選項列在一起 */
   :root {
-    --bg: #f5f6f9;
-    --surface: #ffffff;
-    --surface-2: #eef1f6;
-    --line: #dde2ec;
-    --fg: #1a2230;
-    --muted: #5d677a;
-    --accent: #2f5bd0;
-    --accent-soft: #e7edfc;
-    --good: #0f8a5f;
-    --good-soft: #e0f3ea;
-    --warn: #b7791f;
-    --font: "IBM Plex Sans", system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+    --bg:#f5f6f9; --surface:#fff; --surface-2:#eef1f6; --line:#dde2ec;
+    --fg:#1a2230; --muted:#5d677a; --accent:#2f5bd0; --accent-soft:#e7edfc;
+    --good:#0f8a5f; --good-soft:#e0f3ea;
+    --font:"IBM Plex Sans",system-ui,"PingFang TC","Microsoft JhengHei",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",monospace;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #11151c;
-      --surface: #1a212b;
-      --surface-2: #222b38;
-      --line: #313c4b;
-      --fg: #e8ecf3;
-      --muted: #9aa6b8;
-      --accent: #6c93f5;
-      --accent-soft: #1f2d4d;
-      --good: #35c489;
-      --good-soft: #163428;
-      --warn: #e0a84a;
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #11151c;
-    --surface: #1a212b;
-    --surface-2: #222b38;
-    --line: #313c4b;
-    --fg: #e8ecf3;
-    --muted: #9aa6b8;
-    --accent: #6c93f5;
-    --accent-soft: #1f2d4d;
-    --good: #35c489;
-    --good-soft: #163428;
-    --warn: #e0a84a;
-    color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  body { background: var(--bg); color: var(--fg); font-family: var(--font); line-height: 1.5; }
-  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--surface); z-index: 20; }
-  a { color: var(--accent); }
-  .wrap { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --bg:#11151c; --surface:#1a212b; --surface-2:#222b38; --line:#313c4b;
+    --fg:#e8ecf3; --muted:#9aa6b8; --accent:#6c93f5; --accent-soft:#1f2d4d;
+    --good:#35c489; --good-soft:#163428; color-scheme:dark; } }
+  :root[data-theme="dark"]{
+    --bg:#11151c; --surface:#1a212b; --surface-2:#222b38; --line:#313c4b;
+    --fg:#e8ecf3; --muted:#9aa6b8; --accent:#6c93f5; --accent-soft:#1f2d4d;
+    --good:#35c489; --good-soft:#163428; color-scheme:dark; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.5;}
+  .wrap{max-width:1000px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
 
-  header.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; background: var(--surface); border-bottom: 1px solid var(--line); }
-  .bar-inner { padding-block: 12px; display: flex; flex-direction: column; gap: 12px; }
-  .titlerow { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  h1 { font-size: 1.15rem; font-weight: 700; margin: 0; letter-spacing: .01em; }
-  .updated { font-size: .78rem; color: var(--muted); font-family: var(--mono); }
+  header.bar{position:sticky;top:0;z-index:15;background:var(--surface);border-bottom:1px solid var(--line);}
+  .bar-inner{padding-block:12px;display:flex;flex-direction:column;gap:11px;}
+  .titlerow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  h1{font-size:1.15rem;font-weight:700;margin:0;}
+  .updated{font-size:.76rem;color:var(--muted);font-family:var(--mono);}
 
-  /* 來回/單程 切換 */
-  .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
-  .seg button { font: inherit; font-weight: 600; font-size: .9rem; border: 0; background: transparent; color: var(--muted); padding: 7px 18px; border-radius: 7px; cursor: pointer; }
-  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .controls{display:flex;flex-wrap:wrap;gap:9px;align-items:center;}
+  .seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px;}
+  .seg button{font:inherit;font-weight:600;font-size:.88rem;border:0;background:transparent;color:var(--muted);padding:6px 16px;border-radius:7px;cursor:pointer;}
+  .seg button[aria-pressed="true"]{background:var(--accent);color:#fff;}
 
-  .filters { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-size: .85rem; }
-  .filt { display: flex; align-items: center; gap: 6px; }
-  .filt label { color: var(--muted); }
-  select, .chk { font: inherit; font-size: .85rem; }
-  select { background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 7px; padding: 5px 8px; }
-  .airlines { display: flex; flex-wrap: wrap; gap: 6px; }
-  .pill { font-size: .8rem; border: 1px solid var(--line); background: var(--surface); color: var(--muted); padding: 4px 10px; border-radius: 999px; cursor: pointer; user-select: none; }
-  .pill[data-on="1"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  /* 下拉元件(details) */
+  details.dd{position:relative;}
+  details.dd>summary{list-style:none;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 12px;white-space:nowrap;}
+  details.dd>summary::-webkit-details-marker{display:none;}
+  details.dd>summary::after{content:" ▾";color:var(--muted);}
+  details.dd[open]>summary{border-color:var(--accent);color:var(--accent);}
+  .panel{position:absolute;z-index:30;margin-top:6px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:10px;min-width:210px;max-height:320px;overflow:auto;}
+  .panel label{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:400;padding:5px 4px;cursor:pointer;color:var(--fg);}
+  .panel .row{display:flex;gap:8px;align-items:center;}
+  .panel .mini{font-size:.76rem;color:var(--accent);background:none;border:0;cursor:pointer;padding:2px 4px;}
+  select,input[type=number]{font:inherit;font-size:.85rem;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 9px;}
+  .inlinechk{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 11px;cursor:pointer;}
 
-  main { padding-block: 18px 40px; display: flex; flex-direction: column; gap: 22px; }
-  .note { font-size: .8rem; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+  main{padding-block:16px 48px;}
+  .note{font-size:.78rem;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:9px 13px;margin-bottom:12px;}
+  .summary{display:flex;gap:16px;flex-wrap:wrap;align-items:baseline;margin-bottom:10px;}
+  .summary .cnt{font-size:.82rem;color:var(--muted);}
+  .summary .lo{font-family:var(--mono);font-weight:700;color:var(--good);font-size:.95rem;}
 
-  .daygroup { }
-  .dayhead { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-  .dayhead h2 { font-size: 1rem; margin: 0; font-weight: 700; }
-  .dayhead .sub { font-size: .8rem; color: var(--muted); font-family: var(--mono); }
-  .dayhead .lo { margin-left: auto; font-family: var(--mono); font-weight: 700; color: var(--good); }
-
-  .subgroup-label { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 4px 0 8px; }
-
-  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-  th, td { text-align: left; padding: 9px 12px; white-space: nowrap; }
-  th { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--line); font-weight: 600; }
-  tbody tr + tr td { border-top: 1px solid var(--line); }
-  td.price { font-family: var(--mono); font-weight: 700; font-size: .95rem; }
-  td.num { font-family: var(--mono); color: var(--muted); }
-  tr.best td { background: var(--good-soft); }
-  .tag { font-size: .7rem; font-weight: 700; color: var(--good); border: 1px solid var(--good); border-radius: 5px; padding: 1px 5px; margin-left: 6px; }
-  .stops0 { color: var(--good); font-weight: 600; }
-  .empty { padding: 18px; color: var(--muted); font-size: .85rem; text-align: center; }
-  .loading { padding: 50px 0; text-align: center; color: var(--muted); }
-  @media (max-width: 480px) { h1 { font-size: 1.05rem; } th, td { padding: 8px 10px; } }
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface);}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
+  th,td{text-align:left;padding:9px 11px;white-space:nowrap;font-size:.86rem;}
+  thead th{position:sticky;top:0;background:var(--surface-2);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line);font-weight:600;cursor:pointer;user-select:none;}
+  thead th .ar{opacity:.5;font-size:.7rem;}
+  tbody tr+tr td{border-top:1px solid var(--line);}
+  td.price{font-family:var(--mono);font-weight:700;}
+  td.num{font-family:var(--mono);color:var(--muted);}
+  td.ap{font-family:var(--mono);font-weight:600;}
+  tr.best td{background:var(--good-soft);}
+  .tag{font-size:.68rem;font-weight:700;color:var(--good);border:1px solid var(--good);border-radius:5px;padding:0 5px;margin-left:6px;}
+  .d0{color:var(--good);font-weight:600;}
+  .empty{padding:26px;color:var(--muted);text-align:center;font-size:.9rem;}
+  .loading{padding:50px 0;text-align:center;color:var(--muted);}
+  @media (max-width:480px){ h1{font-size:1.05rem;} th,td{padding:8px 9px;font-size:.82rem;} }
 </style>
 
 <header class="bar">
@@ -107,153 +77,167 @@
       <h1>韓台機票雷達</h1>
       <span class="updated" id="updated">—</span>
     </div>
-    <div class="seg" role="group" aria-label="行程類型">
-      <button id="btn-rt" aria-pressed="true">來回</button>
-      <button id="btn-ow" aria-pressed="false">單程</button>
-    </div>
-    <div class="filters">
-      <div class="filt"><label><input type="checkbox" class="chk" id="direct"> 只看直達</label></div>
-      <div class="filt">
-        <label for="fromh">起飛時段</label>
-        <select id="fromh"></select><span>–</span><select id="toh"></select>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="行程類型">
+        <button id="btn-rt" aria-pressed="true">來回</button>
+        <button id="btn-ow" aria-pressed="false">單程</button>
       </div>
+      <details class="dd" id="dd-air"><summary>航空</summary>
+        <div class="panel">
+          <div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);margin-bottom:4px;padding-bottom:4px;">
+            <button class="mini" id="air-all">全選</button><button class="mini" id="air-none">全不選</button>
+          </div>
+          <div id="air-list"></div>
+        </div>
+      </details>
+      <details class="dd" id="dd-date"><summary>日期</summary>
+        <div class="panel" id="date-list"></div>
+      </details>
+      <details class="dd" id="dd-time"><summary>起飛時段</summary>
+        <div class="panel">
+          <div class="row"><select id="fromh"></select><span>–</span><select id="toh"></select></div>
+        </div>
+      </details>
+      <label class="inlinechk"><input type="checkbox" id="direct"> 只看直達</label>
     </div>
-    <div class="airlines" id="airlines"></div>
   </div>
 </header>
 
-<main class="wrap" id="main">
-  <div class="loading">載入航班資料中…</div>
-</main>
+<main class="wrap" id="main"><div class="loading">載入航班資料中…</div></main>
 
 <script>
-const FMT = n => "NT$" + n.toLocaleString("en-US");
-const hhmm = m => m==null ? "—" : String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
-const durtxt = m => m==null ? "—" : (m>=60 ? Math.floor(m/60)+"h"+(m%60?String(m%60).padStart(2,"0"):"") : m+"m");
+const FMT=n=>"NT$"+n.toLocaleString("en-US");
+const hhmm=m=>m==null?"—":String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+const durtxt=m=>m==null?"—":(m>=60?Math.floor(m/60)+"h"+(m%60?String(m%60).padStart(2,"0"):""):m+"m");
+const splitRoute=r=>{const p=r.split(/[⇄→]/);return[p[0]||"?",p[1]||"?"];};
 
-let DATA = null;
-let trip = "round-trip";
-const state = { direct:false, fromh:0, toh:24, off:new Set() };
+let DATA=null, trip="round-trip";
+const state={direct:false,fromh:0,toh:24,off:new Set(),date:"全部"};
+const sort={key:"price",dir:1};
 
-function airlinesOf(rows){ return [...new Set(rows.map(r=>r.airline))].sort(); }
+const COLS=[
+  {key:"price",label:"價格"},{key:"airline",label:"航空"},
+  {key:"from",label:"出發"},{key:"to",label:"抵達"},
+  {key:"out_date",label:"去程日"},{key:"ret_date",label:"回程日"},
+  {key:"dep_min",label:"起飛"},{key:"stops",label:"轉機"},{key:"duration_min",label:"時長"},
+];
+
+function airlinesOf(rows){return [...new Set(rows.map(r=>r.airline))].sort();}
+function datesOf(rows){return [...new Set(rows.map(r=>trip==="round-trip"?r.out_date+" / "+r.ret_date:r.out_date))].sort();}
 
 function buildHourSelects(){
-  const f=document.getElementById("fromh"), t=document.getElementById("toh");
-  f.innerHTML=""; t.innerHTML="";
-  for(let h=0;h<=24;h++){
-    const o1=new Option(String(h).padStart(2,"0")+":00",h); f.add(o1);
-    const o2=new Option(String(h).padStart(2,"0")+":00",h); t.add(o2);
-  }
-  f.value=0; t.value=24;
-  f.onchange=()=>{ state.fromh=+f.value; render(); };
-  t.onchange=()=>{ state.toh=+t.value; render(); };
+  const f=document.getElementById("fromh"),t=document.getElementById("toh");
+  for(let h=0;h<=24;h++){f.add(new Option(String(h).padStart(2,"0")+":00",h));t.add(new Option(String(h).padStart(2,"0")+":00",h));}
+  f.value=0;t.value=24;
+  f.onchange=()=>{state.fromh=+f.value;render();};
+  t.onchange=()=>{state.toh=+t.value;render();};
 }
-
 function buildAirlines(){
-  const rows = DATA[trip]||[];
-  const box=document.getElementById("airlines"); box.innerHTML="";
-  airlinesOf(rows).forEach(a=>{
-    const el=document.createElement("span");
-    el.className="pill"; el.textContent=a;
-    el.dataset.on = state.off.has(a) ? "0":"1";
-    el.onclick=()=>{ state.off.has(a)?state.off.delete(a):state.off.add(a); el.dataset.on=state.off.has(a)?"0":"1"; render(); };
-    box.appendChild(el);
+  const list=document.getElementById("air-list");list.innerHTML="";
+  airlinesOf(DATA[trip]||[]).forEach(a=>{
+    const lab=document.createElement("label");
+    const cb=document.createElement("input");cb.type="checkbox";cb.checked=!state.off.has(a);
+    cb.onchange=()=>{cb.checked?state.off.delete(a):state.off.add(a);updateAirSummary();render();};
+    lab.appendChild(cb);lab.appendChild(document.createTextNode(a));list.appendChild(lab);
   });
+  updateAirSummary();
+}
+function updateAirSummary(){
+  const all=airlinesOf(DATA[trip]||[]);const on=all.filter(a=>!state.off.has(a)).length;
+  document.querySelector("#dd-air>summary").textContent=on===all.length?"航空":`航空(${on}/${all.length})`;
+}
+function buildDates(){
+  const box=document.getElementById("date-list");box.innerHTML="";
+  const opts=["全部",...datesOf(DATA[trip]||[])];
+  if(!opts.includes(state.date))state.date="全部";
+  opts.forEach(d=>{
+    const lab=document.createElement("label");
+    const rb=document.createElement("input");rb.type="radio";rb.name="datepick";rb.checked=state.date===d;
+    rb.onchange=()=>{state.date=d;document.querySelector("#dd-date>summary").textContent=d==="全部"?"日期":"日期:"+d;render();};
+    lab.appendChild(rb);lab.appendChild(document.createTextNode(d));box.appendChild(lab);
+  });
+  document.querySelector("#dd-date>summary").textContent=state.date==="全部"?"日期":"日期:"+state.date;
 }
 
 function pass(r){
-  if(state.direct && r.stops!==0) return false;
-  if(state.off.has(r.airline)) return false;
-  if(r.dep_min!=null){ if(r.dep_min < state.fromh*60 || r.dep_min > state.toh*60) return false; }
+  if(state.direct&&r.stops!==0)return false;
+  if(state.off.has(r.airline))return false;
+  if(r.dep_min!=null&&(r.dep_min<state.fromh*60||r.dep_min>state.toh*60))return false;
+  if(state.date!=="全部"){const d=trip==="round-trip"?r.out_date+" / "+r.ret_date:r.out_date;if(d!==state.date)return false;}
   return true;
 }
-
-function groupKey(r){ return trip==="round-trip" ? r.out_date+"→"+r.ret_date : r.out_date; }
+function rowVals(r){const[f,t]=splitRoute(r.route);return{...r,from:f,to:t};}
 
 function render(){
-  const main=document.getElementById("main");
-  const rows=(DATA[trip]||[]).filter(pass);
-  main.innerHTML="";
-  const noteDiv=document.createElement("div"); noteDiv.className="note";
-  noteDiv.textContent="價格為 Google Flights 參考價(可能來自第三方平台),訂票前請至航空公司官網確認實際票價與行李規則。";
-  main.appendChild(noteDiv);
+  const main=document.getElementById("main");main.innerHTML="";
+  const note=document.createElement("div");note.className="note";
+  note.textContent="價格為 Google Flights 參考價(可能來自第三方平台),訂票前請至航空公司官網確認。清單頁不含航班編號。";
+  main.appendChild(note);
 
-  const groups={};
-  rows.forEach(r=>{ (groups[groupKey(r)] ||= []).push(r); });
-  const keys=Object.keys(groups).sort();
-  if(!keys.length){ const e=document.createElement("div"); e.className="empty"; e.textContent="目前篩選條件下沒有航班,試著放寬條件。"; main.appendChild(e); return; }
-
-  // 整體最低價(此次篩選後)用來標記
-  const globalLo = Math.min(...rows.map(r=>r.price));
-
-  keys.forEach(k=>{
-    const list=groups[k].slice().sort((a,b)=>a.price-b.price);
-    const lo=list[0].price;
-    const g=document.createElement("section"); g.className="daygroup";
-    const head=document.createElement("div"); head.className="dayhead";
-    const h2=document.createElement("h2");
-    if(trip==="round-trip"){ const [o,r]=k.split("→"); h2.textContent="去 "+o+"　回 "+r; }
-    else h2.textContent=k+" 出發";
-    head.appendChild(h2);
-    const lohint=document.createElement("span"); lohint.className="lo"; lohint.textContent="最低 "+FMT(lo);
-    head.appendChild(lohint);
-    g.appendChild(head);
-
-    if(trip==="one-way"){
-      const dirs={}; list.forEach(r=>{ (dirs[r.route] ||= []).push(r); });
-      Object.keys(dirs).sort().forEach(dir=>{ addTable(g, dir, dirs[dir].slice(0,6), globalLo); });
-    } else {
-      addTable(g, null, list.slice(0,8), globalLo);
-    }
-    main.appendChild(g);
+  let rows=(DATA[trip]||[]).filter(pass).map(rowVals);
+  rows.sort((a,b)=>{
+    let x=a[sort.key],y=b[sort.key];
+    if(x==null)x=sort.dir>0?Infinity:-Infinity; if(y==null)y=sort.dir>0?Infinity:-Infinity;
+    if(typeof x==="string")return x.localeCompare(y)*sort.dir;
+    return (x-y)*sort.dir;
   });
-}
 
-function addTable(parent, label, items, globalLo){
-  if(label){ const l=document.createElement("div"); l.className="subgroup-label"; l.textContent=label; parent.appendChild(l); }
-  const tw=document.createElement("div"); tw.className="tablewrap";
+  const sum=document.createElement("div");sum.className="summary";
+  if(rows.length){
+    const lo=Math.min(...rows.map(r=>r.price));
+    sum.innerHTML=`<span class="lo">最低 ${FMT(lo)}</span><span class="cnt">共 ${rows.length} 筆(所有符合條件的航班)</span>`;
+  }
+  main.appendChild(sum);
+  if(!rows.length){const e=document.createElement("div");e.className="empty";e.textContent="目前篩選條件下沒有航班,試著放寬條件。";main.appendChild(e);return;}
+
+  const globalLo=Math.min(...rows.map(r=>r.price));
+  const tw=document.createElement("div");tw.className="tablewrap";
   const t=document.createElement("table");
-  t.innerHTML="<thead><tr><th>價格</th><th>航空</th><th>路線</th><th>起飛</th><th>轉機</th><th>時長</th></tr></thead>";
+  const thead=document.createElement("thead");const htr=document.createElement("tr");
+  COLS.forEach(c=>{
+    const th=document.createElement("th");
+    th.innerHTML=c.label+(sort.key===c.key?` <span class="ar">${sort.dir>0?"▲":"▼"}</span>`:"");
+    th.onclick=()=>{if(sort.key===c.key)sort.dir*=-1;else{sort.key=c.key;sort.dir=c.key==="price"||c.key==="dep_min"||c.key==="duration_min"||c.key==="stops"?1:1;}render();};
+    htr.appendChild(th);
+  });
+  thead.appendChild(htr);t.appendChild(thead);
   const tb=document.createElement("tbody");
-  items.forEach(r=>{
-    const tr=document.createElement("tr");
-    if(r.price===globalLo) tr.className="best";
-    const stops = r.stops===0 ? '<span class="stops0">直達</span>' : (r.stops==null?'—':r.stops+" 轉");
-    tr.innerHTML =
+  rows.forEach(r=>{
+    const tr=document.createElement("tr");if(r.price===globalLo)tr.className="best";
+    const stops=r.stops===0?'<span class="d0">直達</span>':(r.stops==null?'—':r.stops+" 轉");
+    tr.innerHTML=
       `<td class="price">${FMT(r.price)}${r.price===globalLo?'<span class="tag">最低</span>':''}</td>`+
       `<td>${r.airline}</td>`+
-      `<td class="num">${r.route}</td>`+
+      `<td class="ap">${r.from}</td>`+
+      `<td class="ap">${r.to}</td>`+
+      `<td class="num">${r.out_date}</td>`+
+      `<td class="num">${r.ret_date||"—"}</td>`+
       `<td class="num">${hhmm(r.dep_min)}</td>`+
       `<td>${stops}</td>`+
       `<td class="num">${durtxt(r.duration_min)}</td>`;
     tb.appendChild(tr);
   });
-  t.appendChild(tb); tw.appendChild(t); parent.appendChild(tw);
+  t.appendChild(tb);tw.appendChild(t);main.appendChild(tw);
 }
 
 function setTrip(nt){
   trip=nt;
-  document.getElementById("btn-rt").setAttribute("aria-pressed", nt==="round-trip");
-  document.getElementById("btn-ow").setAttribute("aria-pressed", nt==="one-way");
-  buildAirlines(); render();
+  document.getElementById("btn-rt").setAttribute("aria-pressed",nt==="round-trip");
+  document.getElementById("btn-ow").setAttribute("aria-pressed",nt==="one-way");
+  buildAirlines();buildDates();render();
 }
 
 async function boot(){
   buildHourSelects();
   document.getElementById("btn-rt").onclick=()=>setTrip("round-trip");
   document.getElementById("btn-ow").onclick=()=>setTrip("one-way");
-  document.getElementById("direct").onchange=e=>{ state.direct=e.target.checked; render(); };
-  try{
-    const res=await fetch("data.json",{cache:"no-store"});
-    DATA=await res.json();
-  }catch(e){
-    document.getElementById("main").innerHTML='<div class="empty">讀不到 data.json。請先執行抓價程式產生資料。</div>';
-    return;
-  }
+  document.getElementById("direct").onchange=e=>{state.direct=e.target.checked;render();};
+  document.getElementById("air-all").onclick=()=>{state.off.clear();buildAirlines();render();};
+  document.getElementById("air-none").onclick=()=>{airlinesOf(DATA[trip]||[]).forEach(a=>state.off.add(a));buildAirlines();render();};
+  try{DATA=await (await fetch("data.json",{cache:"no-store"})).json();}
+  catch(e){document.getElementById("main").innerHTML='<div class="empty">讀不到 data.json。</div>';return;}
   document.getElementById("updated").textContent="更新於 "+(DATA["抓取時間"]||"—").replace("T"," ");
-  // 若來回沒資料就預設切到單程
-  if(!(DATA["round-trip"]||[]).length && (DATA["one-way"]||[]).length){ setTrip("one-way"); }
-  else setTrip("round-trip");
+  if(!(DATA["round-trip"]||[]).length&&(DATA["one-way"]||[]).length)setTrip("one-way");else setTrip("round-trip");
 }
 boot();
 </script>
