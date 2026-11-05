@@ -1,5 +1,5 @@
 {
-  "抓取時間": "2026-11-05T21:45:11",
+  "抓取時間": "2026-11-05T21:59:32",
   "round-trip": [
     {
       "price": 10029,
@@ -379,10 +379,23 @@
       "trip": "round-trip"
     },
     {
-      "price": 11729,
+      "price": 12229,
       "airline": "台灣虎航",
       "stops": 0,
       "dep_min": 1200,
+      "dep_airport": "臺灣桃園國際機場",
+      "arr_airport": "仁川國際機場",
+      "duration_min": 150,
+      "route": "TPE⇄ICN",
+      "out_date": "2026-12-27",
+      "ret_date": "2027-01-03",
+      "trip": "round-trip"
+    },
+    {
+      "price": 13179,
+      "airline": "酷航",
+      "stops": 0,
+      "dep_min": 1090,
       "dep_airport": "臺灣桃園國際機場",
       "arr_airport": "仁川國際機場",
       "duration_min": 150,
@@ -418,13 +431,13 @@
       "trip": "round-trip"
     },
     {
-      "price": 13179,
-      "airline": "酷航",
+      "price": 16251,
+      "airline": "長榮航空",
       "stops": 0,
-      "dep_min": 1090,
+      "dep_min": 425,
       "dep_airport": "臺灣桃園國際機場",
       "arr_airport": "仁川國際機場",
-      "duration_min": 150,
+      "duration_min": 145,
       "route": "TPE⇄ICN",
       "out_date": "2026-12-27",
       "ret_date": "2027-01-03",
@@ -451,19 +464,6 @@
       "dep_airport": "臺灣桃園國際機場",
       "arr_airport": "仁川國際機場",
       "duration_min": 150,
-      "route": "TPE⇄ICN",
-      "out_date": "2026-12-27",
-      "ret_date": "2027-01-03",
-      "trip": "round-trip"
-    },
-    {
-      "price": 16251,
-      "airline": "長榮航空",
-      "stops": 0,
-      "dep_min": 425,
-      "dep_airport": "臺灣桃園國際機場",
-      "arr_airport": "仁川國際機場",
-      "duration_min": 145,
       "route": "TPE⇄ICN",
       "out_date": "2026-12-27",
       "ret_date": "2027-01-03",
@@ -568,32 +568,6 @@
       "dep_airport": "臺灣桃園國際機場",
       "arr_airport": "金浦國際機場",
       "duration_min": 340,
-      "route": "TPE⇄GMP",
-      "out_date": "2026-12-27",
-      "ret_date": "2027-01-03",
-      "trip": "round-trip"
-    },
-    {
-      "price": 94262,
-      "airline": "長榮航空和全日空航空",
-      "stops": null,
-      "dep_min": 530,
-      "dep_airport": "臺灣桃園國際機場",
-      "arr_airport": "金浦國際機場",
-      "duration_min": 760,
-      "route": "TPE⇄GMP",
-      "out_date": "2026-12-27",
-      "ret_date": "2027-01-03",
-      "trip": "round-trip"
-    },
-    {
-      "price": 95269,
-      "airline": "長榮航空和全日空航空",
-      "stops": null,
-      "dep_min": 475,
-      "dep_airport": "臺灣桃園國際機場",
-      "arr_airport": "金浦國際機場",
-      "duration_min": 580,
       "route": "TPE⇄GMP",
       "out_date": "2026-12-27",
       "ret_date": "2027-01-03",
@@ -1330,19 +1304,6 @@
       "trip": "one-way"
     },
     {
-      "price": 67732,
-      "airline": "全日空航空",
-      "stops": null,
-      "dep_min": 1010,
-      "dep_airport": "臺北松山機場",
-      "arr_airport": "金浦國際機場",
-      "duration_min": 1040,
-      "route": "TSA→GMP",
-      "out_date": "2026-12-20",
-      "ret_date": null,
-      "trip": "one-way"
-    },
-    {
       "price": 96002,
       "airline": "全日空航空",
       "stops": null,
@@ -1785,7 +1746,7 @@
       "trip": "one-way"
     },
     {
-      "price": 4499,
+      "price": 4999,
       "airline": "台灣虎航",
       "stops": 0,
       "dep_min": 1200,
@@ -1980,32 +1941,6 @@
       "trip": "one-way"
     },
     {
-      "price": 9169,
-      "airline": "台灣虎航和釜山航空",
-      "stops": null,
-      "dep_min": 400,
-      "dep_airport": "臺灣桃園國際機場",
-      "arr_airport": "金浦國際機場",
-      "duration_min": 405,
-      "route": "TPE→GMP",
-      "out_date": "2026-12-27",
-      "ret_date": null,
-      "trip": "one-way"
-    },
-    {
-      "price": 8857,
-      "airline": "大韓航空",
-      "stops": null,
-      "dep_min": 1050,
-      "dep_airport": "臺灣桃園國際機場",
-      "arr_airport": "金浦國際機場",
-      "duration_min": 1640,
-      "route": "TPE→GMP",
-      "out_date": "2026-12-27",
-      "ret_date": null,
-      "trip": "one-way"
-    },
-    {
       "price": 12227,
       "airline": "真航空和大韓航空",
       "stops": null,
@@ -2019,19 +1954,6 @@
       "trip": "one-way"
     },
     {
-      "price": 15389,
-      "airline": "中國國際航空",
-      "stops": null,
-      "dep_min": 1125,
-      "dep_airport": "臺灣桃園國際機場",
-      "arr_airport": "金浦國際機場",
-      "duration_min": 1040,
-      "route": "TPE→GMP",
-      "out_date": "2026-12-27",
-      "ret_date": null,
-      "trip": "one-way"
-    },
-    {
       "price": 21287,
       "airline": "中華航空和大韓航空",
       "stops": null,
@@ -2039,19 +1961,6 @@
       "dep_airport": "臺灣桃園國際機場",
       "arr_airport": "金浦國際機場",
       "duration_min": 340,
-      "route": "TPE→GMP",
-      "out_date": "2026-12-27",
-      "ret_date": null,
-      "trip": "one-way"
-    },
-    {
-      "price": 29190,
-      "airline": "長榮航空和大韓航空",
-      "stops": null,
-      "dep_min": 900,
-      "dep_airport": "臺灣桃園國際機場",
-      "arr_airport": "金浦國際機場",
-      "duration_min": 350,
       "route": "TPE→GMP",
       "out_date": "2026-12-27",
       "ret_date": null,
@@ -2331,13 +2240,13 @@
       "trip": "one-way"
     },
     {
-      "price": 11652,
-      "airline": "上海航空",
+      "price": 66724,
+      "airline": "全日空航空",
       "stops": null,
-      "dep_min": 690,
+      "dep_min": 810,
       "dep_airport": "臺北松山機場",
       "arr_airport": "金浦國際機場",
-      "duration_min": 440,
+      "duration_min": 480,
       "route": "TSA→GMP",
       "out_date": "2026-12-27",
       "ret_date": null,
@@ -2364,19 +2273,6 @@
       "dep_airport": "臺北松山機場",
       "arr_airport": "金浦國際機場",
       "duration_min": 1060,
-      "route": "TSA→GMP",
-      "out_date": "2026-12-27",
-      "ret_date": null,
-      "trip": "one-way"
-    },
-    {
-      "price": 95578,
-      "airline": "中華航空和上海航空",
-      "stops": null,
-      "dep_min": 750,
-      "dep_airport": "臺北松山機場",
-      "arr_airport": "金浦國際機場",
-      "duration_min": 380,
       "route": "TSA→GMP",
       "out_date": "2026-12-27",
       "ret_date": null,
@@ -2526,7 +2422,7 @@
       "trip": "one-way"
     },
     {
-      "price": 10834,
+      "price": 10835,
       "airline": "中華航空",
       "stops": 0,
       "dep_min": 750,

@@ -264,5 +264,138 @@
         "airline": "大韓航空和中華航空"
       }
     }
+  },
+  {
+    "時間": "2026-11-05T21:59:32",
+    "最低": {
+      "round-trip|TPE⇄ICN|2026-12-20|2026-12-27": {
+        "price": 10029,
+        "airline": "台灣虎航"
+      },
+      "round-trip|TPE⇄GMP|2026-12-20|2026-12-27": {
+        "price": 17712,
+        "airline": "大韓航空"
+      },
+      "round-trip|TPE⇄PUS|2026-12-20|2026-12-27": {
+        "price": 9308,
+        "airline": "台灣虎航"
+      },
+      "round-trip|TSA⇄GMP|2026-12-20|2026-12-27": {
+        "price": 18737,
+        "airline": "泰赫航空"
+      },
+      "round-trip|TPE⇄ICN|2026-12-27|2027-01-03": {
+        "price": 12229,
+        "airline": "台灣虎航"
+      },
+      "round-trip|TPE⇄GMP|2026-12-27|2027-01-03": {
+        "price": 17962,
+        "airline": "大韓航空"
+      },
+      "round-trip|TPE⇄PUS|2026-12-27|2027-01-03": {
+        "price": 11784,
+        "airline": "釜山航空"
+      },
+      "round-trip|TSA⇄GMP|2026-12-27|2027-01-03": {
+        "price": 18337,
+        "airline": "泰赫航空"
+      },
+      "one-way|TPE→ICN|2026-12-20|": {
+        "price": 4099,
+        "airline": "台灣虎航"
+      },
+      "one-way|TPE→GMP|2026-12-20|": {
+        "price": 7320,
+        "airline": "濟州航空"
+      },
+      "one-way|TPE→PUS|2026-12-20|": {
+        "price": 2979,
+        "airline": "濟州航空"
+      },
+      "one-way|TPE→CJJ|2026-12-20|": {
+        "price": 10132,
+        "airline": "大韓航空"
+      },
+      "one-way|TSA→ICN|2026-12-20|": {
+        "price": 25106,
+        "airline": "立榮航空和山東航空"
+      },
+      "one-way|TSA→GMP|2026-12-20|": {
+        "price": 7912,
+        "airline": "中華航空"
+      },
+      "one-way|ICN→TPE|2026-12-27|": {
+        "price": 6603,
+        "airline": "中國南方航空"
+      },
+      "one-way|ICN→TSA|2026-12-27|": {
+        "price": 41096,
+        "airline": "山東航空和長榮航空"
+      },
+      "one-way|GMP→TPE|2026-12-27|": {
+        "price": 16979,
+        "airline": "大韓航空"
+      },
+      "one-way|GMP→TSA|2026-12-27|": {
+        "price": 11050,
+        "airline": "泰赫航空"
+      },
+      "one-way|PUS→TPE|2026-12-27|": {
+        "price": 6748,
+        "airline": "濟州航空"
+      },
+      "one-way|CJJ→TPE|2026-12-27|": {
+        "price": 19206,
+        "airline": "大韓航空"
+      },
+      "one-way|TPE→ICN|2026-12-27|": {
+        "price": 4999,
+        "airline": "台灣虎航"
+      },
+      "one-way|TPE→GMP|2026-12-27|": {
+        "price": 7546,
+        "airline": "濟州航空"
+      },
+      "one-way|TPE→PUS|2026-12-27|": {
+        "price": 4217,
+        "airline": "濟州航空"
+      },
+      "one-way|TPE→CJJ|2026-12-27|": {
+        "price": 10832,
+        "airline": "大韓航空"
+      },
+      "one-way|TSA→ICN|2026-12-27|": {
+        "price": 25401,
+        "airline": "長榮航空和山東航空"
+      },
+      "one-way|TSA→GMP|2026-12-27|": {
+        "price": 8650,
+        "airline": "泰赫航空"
+      },
+      "one-way|ICN→TPE|2027-01-03|": {
+        "price": 7595,
+        "airline": "酷航"
+      },
+      "one-way|ICN→TSA|2027-01-03|": {
+        "price": 38655,
+        "airline": "山東航空和長榮航空"
+      },
+      "one-way|GMP→TPE|2027-01-03|": {
+        "price": 10871,
+        "airline": "大韓航空"
+      },
+      "one-way|GMP→TSA|2027-01-03|": {
+        "price": 10535,
+        "airline": "泰赫航空"
+      },
+      "one-way|PUS→TPE|2027-01-03|": {
+        "price": 7483,
+        "airline": "濟州航空"
+      },
+      "one-way|CJJ→TPE|2027-01-03|": {
+        "price": 14385,
+        "airline": "大韓航空和中華航空"
+      }
+    }
   }
 ]
