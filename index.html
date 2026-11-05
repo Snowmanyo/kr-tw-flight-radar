@@ -108,7 +108,7 @@
 <main class="wrap" id="main"><div class="loading">載入航班資料中…</div></main>
 
 <script>
-const FMT=n=>"NT$"+n.toLocaleString("en-US");
+const FMT=n=>(n==null)?"官網查":"NT$"+n.toLocaleString("en-US");
 const K=n=>n>=1000?Math.round(n/100)/10+"k":n; // 矩陣用精簡顯示
 const hhmm=m=>m==null?"—":String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
 const durtxt=m=>m==null?"—":(m>=60?Math.floor(m/60)+"h"+(m%60?String(m%60).padStart(2,"0"):""):m+"m");
@@ -166,11 +166,13 @@ function render(){
   const routes=[...new Set(rows.map(r=>r.route))].sort();
   const cell={}; // key: date|route -> {price, airline}
   rows.forEach(r=>{
-    const k=dateKey(r)+"|"+r.route;
-    if(!cell[k]||r.price<cell[k].price)cell[k]={price:r.price,airline:r.airline};
+    const k=dateKey(r)+"|"+r.route;const cur=cell[k];
+    // 優先採用有價格的最低價;若該格全部無價格,則保留一筆(顯示「官網查」)
+    if(!cur){cell[k]={price:r.price,airline:r.airline};}
+    else if(r.price!=null&&(cur.price==null||r.price<cur.price)){cell[k]={price:r.price,airline:r.airline};}
   });
-  const allPrices=Object.values(cell).map(c=>c.price);
-  const gmin=Math.min(...allPrices);
+  const allPrices=Object.values(cell).map(c=>c.price).filter(p=>p!=null);
+  const gmin=allPrices.length?Math.min(...allPrices):Infinity;
 
   const hint=document.createElement("div");hint.className="hint";
   hint.innerHTML=`列=日期、欄=進出點,格內為該組合<b>最低價</b>(綠色=全場最低)。點任一格看該組合所有航班。`;
@@ -189,7 +191,7 @@ function render(){
     const tr=document.createElement("tr");
     const rh=document.createElement("th");rh.className="rowh";rh.textContent=dateLabel(d);tr.appendChild(rh);
     const rowCells=routes.map(rt=>cell[d+"|"+rt]);
-    const rowMin=Math.min(...rowCells.filter(Boolean).map(c=>c.price));
+    const rowMin=Math.min(...rowCells.filter(c=>c&&c.price!=null).map(c=>c.price));
     routes.forEach((rt,i)=>{
       const c=rowCells[i];const td=document.createElement("td");
       if(!c){td.className="cell empty";td.textContent="—";}
@@ -210,12 +212,12 @@ function render(){
   // 明細
   const det=document.createElement("div");det.className="detail";det.id="detail";
   if(sel){
-    const list=rows.filter(r=>dateKey(r)===sel.d&&r.route===sel.r).sort((a,b)=>a.price-b.price);
+    const list=rows.filter(r=>dateKey(r)===sel.d&&r.route===sel.r).sort((a,b)=>(a.price==null?Infinity:a.price)-(b.price==null?Infinity:b.price));
     const h=document.createElement("h2");h.textContent=`${sel.r}　${dateLabel(sel.d)}　(${list.length} 班)`;det.appendChild(h);
     const tw=document.createElement("div");tw.className="tablewrap";
     const lt=document.createElement("table");lt.className="list";
     lt.innerHTML="<thead><tr><th>價格</th><th>航空</th><th>出發</th><th>抵達</th><th>起飛</th><th>轉機</th><th>時長</th></tr></thead>";
-    const ltb=document.createElement("tbody");const lo=list.length?list[0].price:0;
+    const ltb=document.createElement("tbody");const lo=list.find(r=>r.price!=null)?.price??-1;
     list.forEach(r=>{const[f,to]=splitRoute(r.route);const tr=document.createElement("tr");
       const stops=r.stops===0?'<span class="d0">直達</span>':(r.stops==null?'—':r.stops+" 轉");
       tr.innerHTML=`<td class="price">${FMT(r.price)}${r.price===lo?'<span class="tag">最低</span>':''}</td>`+

@@ -37,13 +37,12 @@ def _to_24h(period: str | None, h: int, m: int) -> int | None:
 def parse_cards(html: str) -> list[dict]:
     """從 Google Flights HTML 解析所有班次卡片。"""
     out = []
-    for lab in re.findall(r'aria-label="([^"]*新台幣[^"]*)"', html):
-        if "搭乘" not in lab:  # 跳過只有價錢、沒有班次資訊的價格標籤
+    for lab in re.findall(r'aria-label="([^"]*)"', html):
+        if "搭乘" not in lab:  # 只留班次卡片,跳過純價格標籤
             continue
         mp = _PRICE.search(lab)
-        if not mp:
-            continue
-        price = int(mp.group(1).replace(",", ""))
+        # Google 偶爾「無法取得總價」(抓不到價),仍保留此班次,price=None,看板標註「官網查」
+        price = int(mp.group(1).replace(",", "")) if mp else None
         air = _AIRLINE.search(lab)
         ms = _STOPS.search(lab)
         stops = 0 if (ms and ms.group(1) is None) else (int(ms.group(1)) if ms else None)
@@ -121,12 +120,10 @@ def _combos(cfg, trip):
             else:
                 for a, b in itertools.product(tw, kr):
                     yield (a, b, out_date, ret_date, f"{a}⇄{b}")
-        else:  # one-way:去程台北->韓國、回程韓國->台北,兩個方向都抓
+        else:  # one-way:對每個候選日,兩個方向都抓(台北→韓國、韓國→台北),不配對
             for a, b in itertools.product(tw, kr):
                 yield (a, b, out_date, None, f"{a}→{b}")
-            if ret_date:
-                for b, a in itertools.product(kr, tw):
-                    yield (b, a, ret_date, None, f"{b}→{a}")
+                yield (b, a, out_date, None, f"{b}→{a}")
 
 
 def run(cfg: dict, limit: int | None = None, verbose: bool = True) -> dict:
@@ -153,7 +150,7 @@ def run(cfg: dict, limit: int | None = None, verbose: bool = True) -> dict:
                 c.update({"route": route, "out_date": od, "ret_date": rd, "trip": trip})
             results[trip].extend(cards)
             if verbose:
-                best = min((c["price"] for c in cards), default=None)
+                best = min((c["price"] for c in cards if c["price"] is not None), default=None)
                 print(f"  [{trip}] {route} 去{od}" + (f"/回{rd}" if rd else "")
                       + f" -> {len(cards)} 筆" + (f",最低 NT${best:,}" if best else ""))
             time.sleep(random.uniform(*delay))
@@ -169,6 +166,8 @@ def save(results: dict):
     snap = {"時間": results["抓取時間"], "最低": {}}
     for trip in ("round-trip", "one-way"):
         for c in results[trip]:
+            if c["price"] is None:  # 無價格的班次不計入歷史最低
+                continue
             key = f'{trip}|{c["route"]}|{c["out_date"]}|{c.get("ret_date") or ""}'
             if key not in snap["最低"] or c["price"] < snap["最低"][key]["price"]:
                 snap["最低"][key] = {"price": c["price"], "airline": c["airline"]}
